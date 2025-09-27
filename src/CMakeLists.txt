@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.31)
+
+add_subdirectory(bin/depot)
+add_subdirectory(lib/core)
+
