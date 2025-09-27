@@ -34,7 +34,7 @@ function(scan_deps_in_folder DIRECTORY)
     endif()
     message(DEBUG "${last_file}: ${MIME_TYPE}")
     get_filename_component(name ${last_file} NAME)
-    if(${MIME_TYPE} MATCHES "application\/x-(pie-)*executable")
+    if(${MIME_TYPE} MATCHES "application/x-(pie-)*executable")
       message(DEBUG "resolve dependencies for ${last_file}")
       file(
         GET_RUNTIME_DEPENDENCIES
@@ -43,10 +43,11 @@ function(scan_deps_in_folder DIRECTORY)
         EXECUTABLES
         ${last_file}
         DIRECTORIES
-        "${Qt6_DIR}/../..")
-    elseif(${MIME_TYPE} MATCHES "application\/x-(pie-)*sharedlib")
+        "${DIRECTORY}/lib"
+        "${DIRECTORY}/lib64")
+    elseif(${MIME_TYPE} MATCHES "application/x-(pie-)*sharedlib")
       # we have to put this library into lib folder, if it is not plugins
-      if(NOT ${last_file} MATCHES ".*\/plugins\/.*")
+      if(NOT ${last_file} MATCHES ".*/plugins/.*")
         if(NOT EXISTS "${abs_dir}/lib/${name}")
           file(COPY ${last_file} DESTINATION "${abs_dir}/lib")
         endif()
@@ -59,9 +60,10 @@ function(scan_deps_in_folder DIRECTORY)
         LIBRARIES
         ${last_file}
         DIRECTORIES
-        "${Qt6_DIR}/../..")
+        "${DIRECTORY}/lib"
+        "${DIRECTORY}/lib64")
     elseif("${MIME_TYPE}" STREQUAL "inode/symlink")
-      if(${last_file} MATCHES ".*\/lib\/.*")
+      if(${last_file} MATCHES ".*/lib/.*")
         if(NOT EXISTS "${abs_dir}/lib/${name}")
           file(
             COPY ${last_file}
@@ -94,7 +96,7 @@ function(scan_deps_in_folder DIRECTORY)
   endwhile()
 endfunction()
 
-function(ensure_rpath DIRECTORY)
+function(ensure_rpath DIRECTORY INSTALL_PATH)
   file(REAL_PATH ${DIRECTORY} abs_dir)
   file(GLOB_RECURSE ALL_FILES FOLLOW_SYMLINKS true "${abs_dir}/*")
 
@@ -111,10 +113,14 @@ function(ensure_rpath DIRECTORY)
     endif()
     message(DEBUG "${file}: ${MIME_TYPE}")
 
-    if(${MIME_TYPE} MATCHES "application\/x-(pie-)*executable")
-      if(NOT ${name} MATCHES "ld-linux(.)*.so.2")
+    if(${MIME_TYPE} MATCHES "application/x-(pie-)*executable"
+       OR ${MIME_TYPE} MATCHES "application/x-(pie-)*sharedlib")
+      set(rpath "\$ORIGIN")
+      if(${MIME_TYPE} MATCHES "application/x-(pie-)*executable")
+        set(rpath "\$ORIGIN/lib:\$ORIGIN/lib64")
         execute_process(
-          COMMAND patchelf --set-rpath "\$ORIGIN/../lib" "${file}"
+          COMMAND patchelf --set-interpreter
+                  "${INSTALL_PATH}/lib/ld-linux-x86-64.so.2" "${file}"
           RESULT_VARIABLE patch_result
           OUTPUT_VARIABLE patch_output
           ERROR_VARIABLE patch_error)
@@ -124,12 +130,24 @@ function(ensure_rpath DIRECTORY)
             FATAL_ERROR "Failed to patch RPATH for ${file}: ${patch_error}")
         endif()
       endif()
-    elseif(${MIME_TYPE} MATCHES "application\/x-(pie-)*sharedlib")
-      # patch $ORIG for every library we put into folder ...
-      if(NOT ${name} MATCHES "ld-linux(.)*.so.2")
-        message(STATUS "${file}")
+
+      if(NOT ${name} MATCHES "ld-linux(.)*.so")
+        file(
+          CHMOD
+          ${file}
+          PERMISSIONS
+          OWNER_READ
+          OWNER_WRITE
+          OWNER_EXECUTE
+          GROUP_READ
+          GROUP_WRITE
+          GROUP_EXECUTE
+          WORLD_READ
+          WORLD_WRITE
+          WORLD_EXECUTE)
+
         execute_process(
-          COMMAND patchelf --set-rpath "\$ORIGIN/../lib" "${file}"
+          COMMAND patchelf --set-rpath "${rpath}" "${file}"
           RESULT_VARIABLE patch_result
           OUTPUT_VARIABLE patch_output
           ERROR_VARIABLE patch_error)
@@ -139,21 +157,23 @@ function(ensure_rpath DIRECTORY)
             FATAL_ERROR "Failed to patch RPATH for ${file}: ${patch_error}")
         endif()
       endif()
-    else()
-      continue()
     endif()
 
   endforeach()
 
 endfunction()
 
+set(INSTALL_PATH "${ROOT_DIR}")
 if(DEFINED CPACK_TEMPORARY_INSTALL_DIRECTORY)
   set(ROOT_DIR
       "${CPACK_TEMPORARY_INSTALL_DIRECTORY}${CPACK_PACKAGING_INSTALL_PREFIX}")
+  set(INSTALL_PATH "${CPACK_PACKAGING_INSTALL_PREFIX}")
 endif()
 
 if(CMAKE_SCRIPT_MODE_FILE OR DEFINED CPACK_TEMPORARY_INSTALL_DIRECTORY)
   message(STATUS "Running DepCollect for ${ROOT_DIR}")
-  scan_deps_in_folder(${ROOT_DIR})
-  ensure_rpath(${ROOT_DIR})
+  if(EXISTS ${ROOT_DIR})
+    scan_deps_in_folder(${ROOT_DIR})
+    ensure_rpath(${ROOT_DIR} ${INSTALL_PATH})
+  endif()
 endif()

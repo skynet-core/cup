@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+
+INSTALL_PREFIX="@PACKAGE_INSTALL_DIRECTORY@"
+PACKAGE_NAME="@PACKAGE_NAME@"
+STANDALONE_PACKAGE="@STANDALONE_PACKAGE@"
+
+action="$1"
+if [ "$1" = "configure" ] && [ -z "$2" ]; then
+    action="install"
+elif [ "$1" = "configure" ] && [ -n "$2" ]; then
+    action="upgrade"
+fi
+
+do_post_install(){
+    printf "\033[32m %s postinstall action in %s \033[0m\n" "$PACKAGE_NAME" "$INSTALL_PREFIX"
+}
+
+do_post_upgrade(){
+    printf "\033[32m %s postupgrade action in %s \033[0m\n" "$PACKAGE_NAME" "$INSTALL_PREFIX"
+}
+
+"do_post_${action}"

@@ -4,8 +4,11 @@
     ],
     "cmake.generator": "Ninja",
     "cmake.configureArgs": [
+        "-DDEPOT_STANDALONE_PACKAGE=ON",
         "-DCMAKE_INSTALL_PREFIX=${workspaceFolder}/install"
     ],
+    "cmake.options.statusBarVisibility": "icon",
+    "cmake.useCMakePresets": "auto",
     "files.watcherExclude": {
         "**/.git/objects/**": true,
         "**/.git/subtree-cache/**": true,

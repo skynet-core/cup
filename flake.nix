@@ -25,7 +25,8 @@
           root = ./.;
           fileset = fs.unions [
             (fs.gitTracked ./.)
-            (fs.fromSource ./cmake) 
+            (fs.fromSource ./cmake)
+            (fs.fromSource ./debian)
           ];
         };
       in
@@ -38,15 +39,20 @@
             cmake
             ninja
             gcc15
+            patchelf
+            dpkg
+            rpm
           ];
 
           buildInputs = with pkgs; [
             cli11
+            stdenv.cc.cc.lib
           ];
           cmakeFlags = [
             "-DCMAKE_CXX_STANDARD=23"
             "-DCMAKE_CXX_EXTENSIONS=OFF"
             "-DCMAKE_CXX_STANDARD_REQUIRED=ON"
+            "-DDEPOT_STANDALONE_PACKAGE=OFF"
           ];
 
           __structuredAttrs = true;
@@ -61,6 +67,9 @@
                 gcc15
                 cmake
                 ninja
+                patchelf
+                dpkg
+                rpm
               ];
               shellHook = ''
                 cat << EOF | g++ -x c++ -
