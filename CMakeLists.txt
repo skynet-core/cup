@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.31)
 project(cup VERSION 1.0.0)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    include(CTest)
+endif()
 
 add_subdirectory(src)
 

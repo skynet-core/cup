@@ -4,8 +4,11 @@ out
 install
 build
 .vscode
+!.vscode/launch.json
+.idea
 .envrc
 .direnv
 result
 packages
 tmp
+

@@ -11,7 +11,8 @@
     "cmake.generator": "Ninja",
     "cmake.configureArgs": [
         "-DDEPOT_STANDALONE_PACKAGE=ON",
-        "-DCMAKE_INSTALL_PREFIX=${workspaceFolder}/install"
+        "-DCMAKE_INSTALL_PREFIX=${workspaceFolder}/install",
+        "-DCUP_BUILD_TESTING=ON"
     ],
     "C_Cpp.clang_format_style": "file",
     "C_Cpp.codeAnalysis.clangTidy.enabled": true,

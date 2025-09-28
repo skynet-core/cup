@@ -30,9 +30,9 @@ namespace cup::http
         friend Base;
 
       public:
-        using http_method = http_impl::verb;
-        using http_field = http_impl::field;
-        using url = boost::urls::url;
+        using Method = http_impl::verb;
+        using HttpField = http_impl::field;
+        using Url = boost::urls::url;
 
         template <typename T> using async = boost::asio::awaitable<T>;
 
@@ -50,8 +50,8 @@ namespace cup::http
 
         struct Request
         {
-            http_method Method{};
-            url Url;
+            Method Method{};
+            Url Url;
             std::string UserAgent{DefaultUserAgent};
             Version HttpVersion{DefaultHttpVersion};
         };

@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.31)
 
 file(GLOB TESTS "*_test.cxx")
+find_package(Catch2 CONFIG REQUIRED Catch2WithMain)
+find_package(Boost CONFIG REQUIRED COMPONENTS headers url)
 foreach(test_file IN LISTS TESTS)
     get_filename_component(name "${test_file}" NAME_WE)
+    add_executable(${name} ${test_file})
+    target_link_libraries(${name} PRIVATE Catch2::Catch2WithMain http Boost::url Boost::headers)
+    add_test(NAME ${name} COMMAND ${name})
 endforeach()
