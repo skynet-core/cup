@@ -32,7 +32,7 @@
       in
       {
         packages.default = stdenv.mkDerivation {
-          pname = "depot";
+          pname = "cup";
           version = "0.1.0";
           inherit src;
           nativeBuildInputs = with pkgs; [
@@ -54,7 +54,7 @@
             "-DCMAKE_CXX_STANDARD=23"
             "-DCMAKE_CXX_EXTENSIONS=OFF"
             "-DCMAKE_CXX_STANDARD_REQUIRED=ON"
-            "-DDEPOT_STANDALONE_PACKAGE=OFF"
+            "-DCUP_STANDALONE_PACKAGE=OFF"
           ];
 
           __structuredAttrs = true;
