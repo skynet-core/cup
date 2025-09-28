@@ -1,21 +1,36 @@
 {
     "clangd.arguments": [
-        "--experimental-modules-support"
+        "--enable-config",
+        "--clang-tidy",
+        "--experimental-modules-support",
+        "--pch-storage=memory",
+        "--malloc-trim",
+        "-j",
+        "4"
     ],
     "cmake.generator": "Ninja",
     "cmake.configureArgs": [
         "-DDEPOT_STANDALONE_PACKAGE=ON",
         "-DCMAKE_INSTALL_PREFIX=${workspaceFolder}/install"
     ],
+    "C_Cpp.clang_format_style": "file",
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.default.intelliSenseMode": "linux-gcc-arm64",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.cppStandard": "c++23",
+    "C_Cpp.intelliSenseEngine": "disabled",
     "cmake.options.statusBarVisibility": "icon",
+    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
     "cmake.useCMakePresets": "auto",
+    "clangd.enable": true,
+    "clangd.restartAfterCrash": true,
     "files.watcherExclude": {
         "**/.git/objects/**": true,
         "**/.git/subtree-cache/**": true,
         "**/.hg/store/**": true,
-        "**/result/**":true,
-        "**/build/**":true,
-        "**/install/**":true,
-        "**/gcm.cache/**":true
+        "**/result/**": true,
+        "**/build/**": true,
+        "**/install/**": true,
+        "**/gcm.cache/**": true
     }
 }

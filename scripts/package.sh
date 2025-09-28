@@ -62,7 +62,7 @@ rm -rf "$ROOT/install" || true
 rm -rf "$ROOT/packages" || true
 
 echo "executing in $ROOT"
-CONFIGURE_OPTIONS="-DDEPOT_STANDALONE_PACKAGE=$STANDALONE -DDEPOT_BUILD_EXAMPLES=$BUILD_EXAMPLES"
+CONFIGURE_OPTIONS="-DCUP_STANDALONE_PACKAGE=$STANDALONE -DCUP_BUILD_EXAMPLES=$BUILD_EXAMPLES"
 CONFIGURE_OPTIONS="$CONFIGURE_OPTIONS -DCMAKE_INSTALL_PREFIX=$ROOT/install"
 
 echo "Re-configuring project with preset $PRESET"
@@ -72,7 +72,7 @@ echo "Build project with preset $PRESET"
 cmake --build --preset $PRESET --parallel "$(nproc)"
 
 echo "Packaging project with preset $PRESET and generator $GENERATOR"
-LOG_FILE="/tmp/intraop.log"
+LOG_FILE="/tmp/cpack.log"
 cpack --config "$ROOT/build/$PRESET/CPackConfig.cmake" -G "$GENERATOR" | tee "$LOG_FILE"
 
 if $TEST_PACKAGES; then

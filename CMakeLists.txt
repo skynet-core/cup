@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.31)
 
-project(depot VERSION 1.0.0)
+project(cup VERSION 1.0.0)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
@@ -23,9 +23,10 @@ install(
     "${CMAKE_CURRENT_BINARY_DIR}/cmake/${CMAKE_PROJECT_NAME}ConfigVersion.cmake"
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME})
 
-option(DEPOT_STANDALONE_PACKAGE "Create standalone package" OFF)
-option(DEPOT_BUILD_EXAMPLES "Build example binaries" OFF)
-if(DEPOT_STANDALONE_PACKAGE)
+option(CUP_STANDALONE_PACKAGE "Create standalone package" OFF)
+option(CUP_BUILD_EXAMPLES "Build example binaries" OFF)
+option(CUP_BUILD_TESTING "Build unit tests" OFF)
+if(CUP_STANDALONE_PACKAGE)
   install(
     CODE "if(NOT DEFINED CPACK_TEMPORARY_INSTALL_DIRECTORY)\nexecute_process(COMMAND ${CMAKE_COMMAND} -DROOT_DIR=${CMAKE_INSTALL_PREFIX} -P ${CMAKE_SOURCE_DIR}/cmake/DepCollect.cmake)\nendif()"
   )
@@ -47,9 +48,12 @@ set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
 
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER
     "Vasyl Zaichenko <vasyl.v.zaichenko@gmail.com>")
-if(DEPOT_STANDALONE_PACKAGE)
+if(CUP_STANDALONE_PACKAGE)
+  set(CPACK_RPM_PACKAGE_RELOCATABLE ON)
   set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/DepCollect.cmake")
 else()
+  set(CPACK_RPM_PACKAGE_AUTOREQ ON)
+  set(CPACK_RPM_PACKAGE_REQUIRES "glibc libstdc++")
   set(CPACK_DEBIAN_PACKAGE_DEPENDS libc6 libstdc++6)
   set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
   set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)

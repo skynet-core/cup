@@ -10,7 +10,6 @@ if [ "$ROOT" != "$PWD" ]; then
 fi
 ROOT="$(pwd)"
 
-
 if [ -f "$ROOT/requirements.txt" ]; then
 	if [ ! -f "$ROOT/.venv/bin/activate" ]; then
 		python3 -m venv "$ROOT/.venv"
@@ -46,6 +45,7 @@ find "$ROOT/packages" -maxdepth 1 -type f -exec sh -c '
 	ext="${package##*.}"
 	shift
 	dir="$1"
+	name="$(basename "$dir")"
 	shift
 	case "$ext" in
 	deb)
@@ -54,11 +54,11 @@ find "$ROOT/packages" -maxdepth 1 -type f -exec sh -c '
 echo "Testing on \$ID"
 apt update
 apt install -y binutils $package
-if [ \$(ldd /opt/depot/depot | grep -c \"not\ found\") -ge 1 ]; then
+if [ \$(ldd /opt/$name/$name | grep -c \"not\ found\") -ge 1 ]; then
 	echo \"ERROR: some runtime libraries can not be resolved\"
 	exit 1
 fi
-if ! /opt/depot/depot --help; then
+if ! /opt/$name/$name --help; then
 	echo "ERROR: can not run executable"
 	exit 1
 fi
@@ -73,11 +73,11 @@ EOF
 echo "Testing on \$ID"
 dnf up --refresh -y
 dnf install -y binutils $package
-if [ \$(ldd /opt/depot/depot | grep -c \"not\ found\") -ge 1 ]; then
+if [ \$(ldd /opt/$name/$name | grep -c \"not\ found\") -ge 1 ]; then
 	echo \"ERROR: some runtime libraries can not be resolved\"
 	exit 1
 fi
-if ! /opt/depot/depot --help; then
+if ! /opt/$name/$name --help; then
 	echo "ERROR: can not run executable"
 	exit 1
 fi

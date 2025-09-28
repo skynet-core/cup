@@ -8,3 +8,4 @@ build
 .direnv
 result
 packages
+tmp

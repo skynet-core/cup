@@ -4,7 +4,6 @@ module;
 
 module core;
 
-
 void HelloJust(){
     std::println("Hello, Just!");
 }

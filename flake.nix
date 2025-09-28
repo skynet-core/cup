@@ -1,5 +1,5 @@
 {
-  description = "AdaptiveCpp CPU + CUDA Backend (SYCL implementation)";
+  description = "CUP | C (++) Ultimate Package manager";
 
   inputs = {
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2505.810395";
@@ -47,6 +47,8 @@
           buildInputs = with pkgs; [
             cli11
             stdenv.cc.cc.lib
+            boost
+            openssl
           ];
           cmakeFlags = [
             "-DCMAKE_CXX_STANDARD=23"
@@ -70,6 +72,13 @@
                 patchelf
                 dpkg
                 rpm
+                clang-tools
+                clang
+                boost
+                nixd
+                nil
+                nixfmt-rfc-style
+                openssl
               ];
               shellHook = ''
                 cat << EOF | g++ -x c++ -
